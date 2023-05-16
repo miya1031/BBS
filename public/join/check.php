@@ -1,26 +1,24 @@
 <?php
 session_start();
+require('../dbconnection.php');
 
 $error = array();
-if ($_POST){
-    if (empty($_POST['name'])){
-        $error['name'] = 'blank';
-    }
-    if (empty($_POST['email'])){
-        $error['email'] = 'blank';
-    }
-    if (empty($_POST['password'])){
-        $error['password'] = 'blank';
-    } elseif (mb_strlen($_POST['password']) < 4){
-        $error['password'] = 'length';
-    }
-}
-if (empty($error)){
-    $_SESSION['join'] = $_POST;
+//SESSION情報[name]がなかったら登録画面に移動させる
+if (empty($_SESSION['name'])){
+    header('Location: index.php');
+    exit();
 }
 
 function h($value){
     return htmlspecialchars($value, ENT_QUOTES);
+}
+if (!empty($_POST)){//登録ボタンが押されたらこれが動く
+    $statement = $db->prepare('INSERT INTO members SET name=?, email=?, password=?, icon=?');
+    $pass = password_hash($_SESSION['password'], PASSWORD_DEFAULT);
+    $statement->execute(array($_SESSION['name'], $_SESSION['email'], $pass, $_SESSION['image']));
+
+    header('Location: thanks.php');
+    exit();
 }
 ?>
 
@@ -74,16 +72,23 @@ function h($value){
                         </dd>
                     </div>
                     <div class='divider'></div>
-                    <div class='grid h-20 card bg-base-300 rounded-box place-items-center'>
+                    <div class='grid card bg-base-300 rounded-box place-items-center'>
                         <dt>
                             <p class='text-xl p-4 underline'>アイコン</p>
                         </dt>
                         <dd>
-
+                        <div class="avatar">
+                            <div class="w-24 rounded">
+                                <img src="../member_image/<?php echo $_SESSION['image'];?>" alt="アイコン画像" class='w-24 h-auto'>
+                            </div>
+                        </div>
                         </dd>
                     </div>
                     <div class='divider'></div>
-                    <dt class='p-8'>
+                    <dt class='p-4'>
+                        <a href="index.php" class='btn btn-outline btn-primary w-full max-w-xs'>修正</a>
+                    </dt>
+                    <dt class='p-4'>
                         <input type="submit" value="登録" class='btn btn-outline btn-primary w-full max-w-xs'>
                     </dt>
                 </dl>
