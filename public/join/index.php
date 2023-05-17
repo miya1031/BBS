@@ -1,5 +1,6 @@
 <?php
 session_start();
+require('../dbconnection.php');
 
 $error = array();
 if (!empty($_POST)){
@@ -8,6 +9,14 @@ if (!empty($_POST)){
     }
     if (empty($_POST['email'])){
         $error['email'] = 'blank';
+    }else{
+        //入力されたメールアドレスがすでに登録されていないか確認
+        $statement = $db->prepare('SELECT COUNT(email) AS num FROM members WHERE email = ?');
+        $statement->execute(array($_POST['email']));
+        $emails = $statement->fetch();
+        if ($emails['num'] >= 1){
+            $error['email'] = 'duplication';
+        }
     }
     if (empty($_POST['password'])){
         $error['password'] = 'blank';
@@ -90,15 +99,17 @@ function h($value){
                     </dt>
                     <dd>
                         <input type="text" name="email" id="" placeholder="taro.yamada@example.co.jp" class='input input-bordered input-primary w-full max-w-xs' value="<?php if(isset($_POST['email'])): echo h($_POST['email']); endif;;?>">
-                        <?php if (!empty($error['email'])):
-                            if ($error['email'] == 'blank'):?>
+                        <?php if (!empty($error['email'])):?>
                                 <div class="alert alert-warning shadow-lg my-2">
                                     <div>
                                         <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                                        <span>メールアドレスを入力してください</span>
+                                        <?php if ($error['email'] == 'blank'):?>
+                                            <span>メールアドレスを入力してください</span>
+                                        <?php elseif($error['email'] == 'duplication'):?>
+                                            <span>すでに登録されている<br>メールアドレスです</span>
+                                        <?php endif; ?>
                                     </div>
-                                </div>
-                            <?php endif; ?>
+                                </div>   
                         <?php endif; ;?>
                     </dd>
                     <dt>

@@ -77,11 +77,19 @@ if (!empty($_POST)){//登録ボタンが押されたらこれが動く
                             <p class='text-xl p-4 underline'>アイコン</p>
                         </dt>
                         <dd>
+                        <?php if (!empty($_SESSION['image'])):?>
                         <div class="avatar">
                             <div class="w-24 rounded">
                                 <img src="../member_image/<?php echo $_SESSION['image'];?>" alt="アイコン画像" class='w-24 h-auto'>
                             </div>
                         </div>
+                        <?php else: ?>
+                        <div class="avatar placeholder">
+                            <div class="bg-primary text-primary-content w-24 rounded">
+                                <span class="text-3xl">no<br>image</span>
+                            </div>
+                        </div> 
+                        <?php endif; ;?>
                         </dd>
                     </div>
                     <div class='divider'></div>
