@@ -11,9 +11,10 @@ if (!empty($_POST['email']) && !empty($_POST['password'])){
     $error = array();
     $statement = $db->prepare('SELECT * FROM members WHERE email=?');
     $statement->execute(array($_POST['email']));
-    $members = $statement->fetch();//メールアドレスの重複はないことを登録段階で確認しているのでここで得られるレコードは 0 or 1
+    $members = $statement->fetch();
+    $count = $statement->rowCount();//メールアドレスの重複はないことを登録段階で確認しているのでここで得られるレコードは 0 or 1
     
-    if (!empty($members)){
+    if ($count == 1){
         if (password_verify($_POST['password'], $members['password'])){
             $_SESSION['id'] = $members['id'];
             header('Location: index.php');
