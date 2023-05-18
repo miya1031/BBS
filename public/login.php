@@ -17,6 +17,10 @@ if (!empty($_POST['email']) && !empty($_POST['password'])){
     if ($count == 1){
         if (password_verify($_POST['password'], $members['password'])){
             $_SESSION['id'] = $members['id'];
+            $_SESSION['name'] = $members['name'];
+            $_SESSION['email'] = $members['email'];
+            $_SESSION['password'] = $members['password'];
+            $_SESSION['icon'] = $members['icon'];
             header('Location: index.php');
             exit();
         } else{
