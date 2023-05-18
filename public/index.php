@@ -156,7 +156,7 @@ function h($value){
                                     <?php endif;?>
                                     <?php if ($_SESSION['id'] == $post['member_id']):?>
                                         <div class='h-1/3'>
-                                            <a href="delete.php" class='badge badge-primary'>削除</a>
+                                            <a href="delete.php?id=<?php echo h($post['id'])?>" class='badge badge-primary'>削除</a>
                                         </div>
                                     <?php endif;?>
                             </div>
