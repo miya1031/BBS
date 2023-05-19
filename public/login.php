@@ -108,6 +108,11 @@ function h($value){
                 </dl>
             </form>
         </div>
+        <div class='border-y border-b-0'>
+            <div class='p-8'>
+                <a href="./join/index.php" class='btn btn-primary w-full max-w-xs'>会員登録</a>
+            </div>
+        </div>
     </main>
     <footer class='footer footer-center p-4 bg-primary-content text-base-content'>
         <div>

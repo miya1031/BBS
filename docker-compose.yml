@@ -1,0 +1,25 @@
+version: '3'
+services:
+  web:
+    build:
+      dockerfile: ./docker/php/Dockerfile
+    ports: 
+      - 8080:80
+    volumes:
+      - ./src:/var/www/html
+
+  db: 
+    image: mysql
+    restart: always
+    volumes: 
+      - ./docker/data/mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+
+  adminer:
+    image: adminer
+    restart: always
+    ports: 
+      - 8025:8080
