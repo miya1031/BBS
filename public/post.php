@@ -82,6 +82,9 @@ if (!empty($_REQUEST['id'])){
                     <li>
                         <a href="logout.php">ログアウト</a>
                     </li>
+                    <li>
+                        <a href="delete-account.php">退会</a>
+                    </li>
                 </ul>
             </div>
         </div>
