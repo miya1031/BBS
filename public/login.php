@@ -32,10 +32,10 @@ if (!empty($_POST['email']) && !empty($_POST['password'])){
     }
 } else{
     //email,password両方とも空欄の時は初期状態であるから警告は出さないようにする
-    if (empty($_POST['email']) && !empty($_POST['password'])){
+    if (empty($_POST['email']) && empty($_POST['password'])){
+    }elseif (empty($_POST['email']) && !empty($_POST['password'])){
         $error['email'] = 'blank';
-    }
-    if (empty($_POST['password'] && !empty($_POST['email']))) {
+    }elseif (empty($_POST['password'] && !empty($_POST['email']))) {
         $error['password'] = 'blank';
     }
 }
