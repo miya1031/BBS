@@ -59,8 +59,32 @@ if (!empty($_REQUEST['id'])){
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
-    <header class='flex justify-center navbar-primary bg-primary'>
-            <h1 class="p-4 text-3xl font-bold text-white">ひとこと掲示板</h1>
+    <header class='navbar bg-primary'>
+        <div class='flex-1'>
+            <a href="index.php"><h1 class="p-4 text-3xl font-bold text-white">ひとこと掲示板</h1></a>
+        </div>
+        <div class="flex-none">
+            <div class="dropdown dropdown-end">
+                <?php if (!empty($_SESSION['icon'])):?>
+                    <label tabindex="0" class="avatar">
+                        <div class="w-16 rounded">
+                            <img src="./member_image/<?php echo h($_SESSION['icon']);?>" alt="アイコン画像">
+                        </div>
+                    </label>
+                <?php else: ?>
+                    <label tabindex="0" class="avatar placeholder">
+                        <div class="bg-white text-black w-16 rounded">
+                            <span class="text-xl">no<br>image</span>
+                        </div>
+                    </label> 
+                <?php endif; ;?>
+                <ul tabindex="0" class='mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-200 rounded-box w-52'>
+                    <li>
+                        <a href="logout.php">ログアウト</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </header>
     <main class='flex flex-col justify-center justify-items-center max-w-3xl mx-auto'>
         <div class='flex p-1 border-y border-t-0 border-gray-200'>
