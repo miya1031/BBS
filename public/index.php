@@ -17,11 +17,15 @@ if (!empty($_REQUEST['re'])){//$_REQUEST['re']に格納されている値が本�
     $search->execute(array($_REQUEST['re']));
     $count =$search->rowCount();
     if ($count==1){
-        $reply = $_REQUEST['re'];
+        $reply = $_REQUEST['re'];//返信先post_id
         $m = $search->fetch();
         $statement = $db->prepare('SELECT name FROM members WHERE id = ?');
         $statement->execute(array($m['member_id']));
         $reply_name = $statement->fetch();//投稿画面に宛先を表示
+        $reply_post_id = $m['reply_post_id'];//返信先のreply_post_id
+        if (!empty($reply_post_id)){
+            $reply = $reply_post_id;
+        }
     } else{
         $reply =NULL;
     }
@@ -69,6 +73,9 @@ $page = max($page,1);//ページ番号がマイナスだった場合
 $statement = $db->query('SELECT COUNT(*) AS cnt FROM posts');
 $count = $statement->fetch();
 $max_page = ceil($count['cnt']/5);
+if ($max_page==0){//投稿がひとつもない場合はmax_page=0になってしまい、エラーが出るので1を代入する。
+    $max_page = 1;
+}
 $page = min($page, $max_page);//ページ番号が最大ページ数より大きい場合
 
 $start_num = ($page-1)*5;
@@ -141,11 +148,11 @@ function h($value){
                                         <span class='text-3xl py-2 px-4 font-bold'><?php echo h($post['name']);?></span>
                                         <span class='pl-2 text-base-300'><?php echo h($post['created']);?></span>
                                     </div>
-                                    <div class='text-left'>
-                                        <p class='text-xl px-4 text-left'><?php if (mb_strlen(h($post['message']))<60): echo url_check(h($post['message'])); else: echo url_check(mb_substr(h($post['message']),0,60)) . '&nbsp;...'; endif;?></p>
-                                    </div>
+                                    <a class='text-left' href='post.php?id=<?php echo h($post['id'])?>'>
+                                        <p class='text-xl px-4 text-left'><?php if (mb_strlen(h($post['message']))<40): echo url_check(h($post['message'])); else: echo url_check(mb_substr(h($post['message']),0,40)) . '&nbsp;...'; endif;?></p>
+                                    </a>
                             </div>
-                            <div class='flex flex-col w-1/5'>
+                            <div class='flex flex-col w-1/5 h-32'>
                                     <div class='h-1/3'>
                                         <a href="index.php?page=<?php echo h($page)?>&re=<?php echo h($post['id'])?>" class='badge badge-primary'>返信</a>
                                     </div>
