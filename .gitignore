@@ -1,3 +1,5 @@
 node_modules/
 .DS_Store
 public/member_image/
+docker/data/
+public/output.css
