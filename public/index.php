@@ -94,7 +94,7 @@ function h($value){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BBS</title>
-    <link href="style.css" rel="stylesheet">
+    <link href="output.css" rel="stylesheet">
 </head>
 <body>
     <header class='navbar bg-primary'>
@@ -149,7 +149,7 @@ function h($value){
                 </form>
             </div>
             <div class='w-1/2'>
-                <div  class='border-y border-t-0 border-gray-200'>
+                <div  class='border-y border-t-0 border-gray-200 lg:border-primary'>
                     <p class='text-2xl p-4 font-bold'>投稿一覧</p>
                 </div>
                 <div class='p-2'>
