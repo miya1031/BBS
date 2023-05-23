@@ -93,25 +93,25 @@ if (!empty($_REQUEST['id'])){
         <div class='flex p-1 border-y border-t-0 border-gray-200'>
             <div class='w-1/5'>
                 <?php if (!empty($topPost['icon'])):?>
-                <div class="avatar">
-                    <div class="w-24 rounded">
+                <div class="avatar m-2 md:m-0">
+                    <div class="w-16 md:w-24 rounded">
                         <img src="./member_image/<?php echo h($topPost['icon']);?>" alt="アイコン画像">
                     </div>
                 </div>
                 <?php else: ?>
-                <div class="avatar placeholder">
-                    <div class="bg-primary text-primary-content w-24 rounded">
+                <div class="avatar placeholder m-2 md:m-0">
+                    <div class="bg-primary text-primary-content w-16 md:w-24 rounded">
                         <span class="text-3xl">no<br>image</span>
                     </div>
                 </div> 
                 <?php endif; ;?>
             </div>
             <div class='flex flex-col items-start w-3/5'>
-                    <div>
-                        <span class='text-3xl py-2 px-4 font-bold'><?php echo h($topPost['name']);?></span>
-                        <span class='pl-2 text-base-300'><?php echo h($topPost['created']);?></span>
+                    <div class='flex flex-col md:flex-row'>
+                        <span class='text-xl md:text-3xl py-2 px-4 font-bold'><?php echo h($topPost['name']);?></span>
+                        <span class='pl-2 text-base-300 pt-0 md:pt-2'><?php echo h($topPost['created']);?></span>
                     </div>
-                    <div class='text-left'>
+                    <div class='text-left pt-2 md:pt-0'>
                         <p class='text-xl px-4 text-left'><?php echo url_check(h($topPost['message']));?></p>
                     </div>
             </div>
@@ -135,25 +135,25 @@ if (!empty($_REQUEST['id'])){
             <div class='flex p-1 border-y border-t-0 border-gray-200'>
                 <div class='w-1/5'>
                     <?php if (!empty($replyPost['icon'])):?>
-                    <div class="avatar">
-                        <div class="w-24 rounded">
+                    <div class="avatar m-2 md:m-0">
+                        <div class="w-16 md:w-24 rounded">
                             <img src="./member_image/<?php echo h($replyPost['icon']);?>" alt="アイコン画像">
                         </div>
                     </div>
                     <?php else: ?>
-                    <div class="avatar placeholder">
-                        <div class="bg-primary text-primary-content w-24 rounded">
+                    <div class="avatar placeholder m-2 md:m-0">
+                        <div class="bg-primary text-primary-content w-16 md:w-24 rounded">
                             <span class="text-3xl">no<br>image</span>
                         </div>
                     </div> 
                     <?php endif; ;?>
                 </div>
                 <div class='flex flex-col items-start w-3/5'>
-                        <div>
-                            <span class='text-3xl py-2 px-4 font-bold'><?php echo h($replyPost['name']);?></span>
-                            <span class='pl-2 text-base-300'><?php echo h($replyPost['created']);?></span>
+                        <div class='flex flex-col md:flex-row'>
+                            <span class='text-xl md:text-3xl py-2 px-4 font-bold'><?php echo h($replyPost['name']);?></span>
+                            <span class='pl-2 text-base-300 pt-2 md:pt-0'><?php echo h($replyPost['created']);?></span>
                         </div>
-                        <div class='text-left'>
+                        <div class='text-left pt-0 md:pt-2'>
                             <p class='text-xl px-4 text-left'><?php echo url_check(h($replyPost['message']));?></p>
                         </div>
                 </div>

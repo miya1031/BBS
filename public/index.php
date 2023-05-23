@@ -114,7 +114,7 @@ function h($value){
                         <div class="bg-white text-black w-16 rounded">
                             <span class="text-xl">no<br>image</span>
                         </div>
-                    </label> 
+                    </label>
                 <?php endif; ;?>
                 <ul tabindex="0" class='mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-200 rounded-box w-52'>
                     <li>
@@ -131,8 +131,8 @@ function h($value){
         <div class='bg-primary-content w-full text-center'>
             <p class='text-xl p-4'>ようこそ！<span class='text-3xl text-primary font-bold'><?php echo h($_SESSION['name'])?></span>さん</p>
         </div>
-        <div class='flex grow justify-center text-center w-full border border-gray-200'>
-            <div class='w-1/2 border-x border-l-0 border-gray-200'>
+        <div class='flex flex-col xl:flex-row justify-center text-center border-y w-full border-gray-200'>
+            <div class='w-full xl:w-1/2 border-x border-l-0 border-gray-200'>
                 <form action="" method="post">
                     <input type="hidden" name="page" value="<?php echo h($page) ;?>">
                     <dl>
@@ -140,7 +140,7 @@ function h($value){
                             <p class='text-2xl p-4 font-bold'>メッセージ</p>
                         </dt>
                         <dd class='p-4'>
-                        <textarea class="textarea textarea-primary w-96 h-48" placeholder="メッセージ" name='message'><?php if(!empty($p['message'])): echo h($p['message']); elseif(!empty($reply_name['name'])): echo '@' . $reply_name['name']; endif;?></textarea>
+                        <textarea class="textarea textarea-primary w-4/5 md:w-96 h-48" placeholder="メッセージ" name='message'><?php if(!empty($p['message'])): echo h($p['message']); elseif(!empty($reply_name['name'])): echo '@' . $reply_name['name']; endif;?></textarea>
                         </dd>
                         <dt class='p-8'>
                             <input type="submit" value="投稿" class='btn btn-outline btn-primary w-full max-w-xs'>
@@ -148,32 +148,32 @@ function h($value){
                     </dl>
                 </form>
             </div>
-            <div class='w-1/2'>
-                <div  class='border-y border-t-0 border-gray-200 lg:border-primary'>
+            <div class='w-full xl:w-1/2 border-y border-b-0 border-gray-200 xl:border-t-0'>
+                <div  class='border-y border-t-0 border-gray-200'>
                     <p class='text-2xl p-4 font-bold'>投稿一覧</p>
                 </div>
                 <div class='p-2'>
                     <?php while($post = $statement->fetch()){ ?>
-                        <div class='flex p-1 hover:bg-primary-content h-32'>
+                        <div class='flex p-1 hover:bg-primary-content h-auto border-b border-gray-200 xl:border-b-0'>
                             <div class='w-1/5'>
                                 <?php if (!empty($post['icon'])):?>
-                                <div class="avatar">
-                                    <div class="w-24 rounded">
+                                <div class="avatar m-2 md:m-0">
+                                    <div class="w-16 md:w-24 rounded">
                                         <img src="./member_image/<?php echo h($post['icon']);?>" alt="アイコン画像">
                                     </div>
                                 </div>
                                 <?php else: ?>
-                                <div class="avatar placeholder">
-                                    <div class="bg-primary text-primary-content w-24 rounded">
+                                <div class="avatar placeholder m-2 md:m-0">
+                                    <div class="bg-primary text-primary-content w-16 md:w-24 rounded">
                                         <span class="text-3xl">no<br>image</span>
                                     </div>
                                 </div> 
                                 <?php endif; ;?>
                             </div>
                             <div class='flex flex-col items-start w-3/5'>
-                                    <div>
-                                        <span class='text-3xl py-2 px-4 font-bold'><?php echo h($post['name']);?></span>
-                                        <span class='pl-2 text-base-300'><?php echo h($post['created']);?></span>
+                                    <div class='flex flex-col md:flex-row'>
+                                        <span class='text-xl md:text-3xl py-2 px-4 font-bold'><?php echo h($post['name']);?></span>
+                                        <span class='pl-2 text-base-300 pt-0 md:pt-2'><?php echo h($post['created']);?></span>
                                     </div>
                                     <a class='text-left' href='post.php?id=<?php echo h($post['id'])?>'>
                                         <p class='text-xl px-4 text-left'><?php if (mb_strlen(h($post['message']))<40): echo url_check(h($post['message'])); else: echo url_check(mb_substr(h($post['message']),0,40)) . '&nbsp;...'; endif;?></p>
