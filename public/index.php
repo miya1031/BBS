@@ -87,6 +87,18 @@ $statement->execute();
 function h($value){
     return htmlspecialchars($value, ENT_QUOTES);
 }
+
+function likeNum($db, $post){
+    $likes = $db->prepare('SELECT * FROM likes WHERE post_id = ?');
+    $likes->execute(array($post['id']));
+    return $likes->rowCount();
+}
+
+function likerFlag($db, $post){
+    $liker = $db->prepare('SELECT * FROM likes WHERE post_id=? AND liker_id=?');
+    $liker->execute(array($post['id'], $_SESSION['id']));
+    return $liker->rowCount();
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja" data-theme="lemonade">
@@ -178,6 +190,20 @@ function h($value){
                                     <a class='text-left' href='post.php?id=<?php echo h($post['id'])?>'>
                                         <p class='text-xl px-4 text-left'><?php if (mb_strlen(h($post['message']))<40): echo url_check(h($post['message'])); else: echo url_check(mb_substr(h($post['message']),0,40)) . '&nbsp;...'; endif;?></p>
                                     </a>
+                                    <div class='pt-2'>
+                                        <div class='flex'>
+                                            <div>
+                                                <?php if(empty(likerFlag($db, $post))):?>
+                                                    <a href="likes.php?post=<?php echo $post['id'];?>">&#9825;</a>
+                                                <?php else: ?>
+                                                    <a href="dislikes.php?post=<?php echo $post['id'];?>">&#9829;</a>
+                                                <?php endif; ;?>
+                                            </div>
+                                            <div>
+                                                <?php if(!empty(likeNum($db, $post))): echo(likeNum($db, $post)); endif; ;?>
+                                            </div>
+                                        </div>
+                                    </div>
                             </div>
                             <div class='flex flex-col w-1/5 h-32'>
                                     <div class='h-1/3'>

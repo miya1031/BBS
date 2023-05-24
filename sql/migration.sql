@@ -30,5 +30,15 @@ CREATE TABLE `posts` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `likes`;
+CREATE TABLE `likes` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `post_id` int DEFAULT NULL,
+    `liker_id` int DEFAULT NULL,
+    `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- 2023-05-22 05:38:19

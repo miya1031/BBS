@@ -49,6 +49,19 @@ if (!empty($_REQUEST['id'])){
     header('Location: index.php');
     exit();
 }
+
+function likeNum($db, $post){
+    $likes = $db->prepare('SELECT * FROM likes WHERE post_id = ?');
+    $likes->execute(array($post['id']));
+    return $likes->rowCount();
+}
+
+function likerFlag($db, $post){
+    $liker = $db->prepare('SELECT * FROM likes WHERE post_id=? AND liker_id=?');
+    $liker->execute(array($post['id'], $_SESSION['id']));
+    return $liker->rowCount();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="ja" data-theme="lemonade">
@@ -114,6 +127,20 @@ if (!empty($_REQUEST['id'])){
                     <div class='text-left pt-2 md:pt-0'>
                         <p class='text-xl px-4 text-left'><?php echo url_check(h($topPost['message']));?></p>
                     </div>
+                    <div class='pt-2'>
+                        <div class='flex'>
+                            <div>
+                                <?php if(empty(likerFlag($db, $topPost))):?>
+                                    <a href="likes.php?post=<?php echo $topPost['id'];?>">&#9825;</a>
+                                <?php else: ?>
+                                    <a href="dislikes.php?post=<?php echo $topPost['id'];?>">&#9829;</a>
+                                <?php endif; ;?>
+                            </div>
+                            <div>
+                                <?php if(!empty(likeNum($db, $topPost))): echo(likeNum($db, $topPost)); endif; ;?>
+                            </div>
+                        </div>
+                    </div>
             </div>
             <div class='flex flex-col w-1/5 h-32'>
                     <div class='h-1/3'>
@@ -155,6 +182,20 @@ if (!empty($_REQUEST['id'])){
                         </div>
                         <div class='text-left pt-0 md:pt-2'>
                             <p class='text-xl px-4 text-left'><?php echo url_check(h($replyPost['message']));?></p>
+                        </div>
+                        <div class='pt-2'>
+                            <div class='flex'>
+                                <div>
+                                    <?php if(empty(likerFlag($db, $replyPost))):?>
+                                        <a href="likes.php?post=<?php echo $replyPost['id'];?>&back=post">&#9825;</a>
+                                    <?php else: ?>
+                                        <a href="dislikes.php?post=<?php echo $replyPost['id'];?>&back=post">&#9829;</a>
+                                    <?php endif; ;?>
+                                </div>
+                                <div>
+                                    <?php if(!empty(likeNum($db, $replyPost))): echo(likeNum($db, $replyPost)); endif; ;?>
+                                </div>
+                            </div>
                         </div>
                 </div>
                 <div class='flex flex-col w-1/5 h-32'>
