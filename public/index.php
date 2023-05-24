@@ -88,12 +88,23 @@ function h($value){
     return htmlspecialchars($value, ENT_QUOTES);
 }
 
+//ある投稿に何個のいいねが押されているかカウントする関数
+//引数
+//$db : PDOインスタンス
+//$post : 投稿のレコード
+//出力
+//likesテーブルにpost_idが$post['id']であるレコードがいくつあるか
 function likeNum($db, $post){
     $likes = $db->prepare('SELECT * FROM likes WHERE post_id = ?');
     $likes->execute(array($post['id']));
     return $likes->rowCount();
 }
-
+//ある投稿にユーザがいいねを押しているか判定する関数
+//引数
+//$db : PDOインスタンス
+//$post : 投稿のレコード
+//出力
+//likesテーブルにpost_idが$post['id']で、liker_idが$_SESSION['id']であるあるレコードがいくつあるか
 function likerFlag($db, $post){
     $liker = $db->prepare('SELECT * FROM likes WHERE post_id=? AND liker_id=?');
     $liker->execute(array($post['id'], $_SESSION['id']));
