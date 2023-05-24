@@ -7,11 +7,15 @@ if (!isset($_SESSION['id']) | !isset($_REQUEST['post'])){
     exit();
 }
 
-$exit = $db->prepare('SELECT * FROM posts WhERE id = ?');
-$exit->execute(array($_REQUEST['post']));
-if (!empty($exit->rowCount())){
-    $like = $db->prepare('INSERT INTO likes SET post_id = ?, liker_id = ?');
+$exist = $db->prepare('SELECT COUNT(*) AS cnt FROM posts WhERE id = ?');
+$exist->execute(array($_REQUEST['post']));
+$count = $exist->fetch();
+if ($count['cnt']==1){
+    $like = $db->prepare('INSERT INTO likes SET post_id = ?, member_id = ?');
     $like->execute(array($_REQUEST['post'], $_SESSION['id']));
+} else{
+    header('Location: index.php');
+    exit();
 }
 
 if (empty($_REQUEST['back'])){

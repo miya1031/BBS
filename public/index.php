@@ -1,15 +1,13 @@
 <?php
 session_start();
 require('dbconnection.php');
+require('./functions/likes.php');
+require('./functions/posts.php');
 
 //SESSIONにidを保持していないゲストはログイン画面へ移動させる
 if (empty($_SESSION['id'])){
     header('Location: login.php');
     exit();
-}
-
-function url_check($value){
-    return preg_replace('/((http|https):\/\/[-_.!~*\'()a-zA-Z0-9;\/?:@&=+$,%#]+)/','<a href="$1" target="_blank">$1</a>',$value);
 }
 
 if (!empty($_REQUEST['re'])){//$_REQUEST['re']に格納されている値が本当に存在するか
@@ -84,32 +82,6 @@ $statement = $db->prepare('SELECT m.name, m.icon, p.* FROM members m INNER JOIN 
 $statement->bindParam(1,$start_num,PDO::PARAM_INT);
 $statement->execute();
 
-function h($value){
-    return htmlspecialchars($value, ENT_QUOTES);
-}
-
-//ある投稿に何個のいいねが押されているかカウントする関数
-//引数
-//$db : PDOインスタンス
-//$post : 投稿のレコード
-//出力
-//likesテーブルにpost_idが$post['id']であるレコードがいくつあるか
-function likeNum($db, $post){
-    $likes = $db->prepare('SELECT * FROM likes WHERE post_id = ?');
-    $likes->execute(array($post['id']));
-    return $likes->rowCount();
-}
-//ある投稿にユーザがいいねを押しているか判定する関数
-//引数
-//$db : PDOインスタンス
-//$post : 投稿のレコード
-//出力
-//likesテーブルにpost_idが$post['id']で、liker_idが$_SESSION['id']であるあるレコードがいくつあるか
-function likerFlag($db, $post){
-    $liker = $db->prepare('SELECT * FROM likes WHERE post_id=? AND liker_id=?');
-    $liker->execute(array($post['id'], $_SESSION['id']));
-    return $liker->rowCount();
-}
 ?>
 <!DOCTYPE html>
 <html lang="ja" data-theme="lemonade">

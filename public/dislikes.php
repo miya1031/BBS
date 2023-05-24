@@ -7,11 +7,15 @@ if (!isset($_SESSION['id']) | !isset($_REQUEST['post'])){
     exit();
 }
 
-$exit = $db->prepare('SELECT * FROM posts WhERE id = ?');
-$exit->execute(array($_REQUEST['post']));
-if (!empty($exit->rowCount())){
-    $dislike = $db->prepare('DELETE FROM likes WHERE post_id = ? AND liker_id = ?');
+$exist = $db->prepare('SELECT COUNT(*) cnt FROM posts WhERE id = ?');
+$exist->execute(array($_REQUEST['post']));
+$count = $exist->fetch();
+if ($count['cnt']==1){
+    $dislike = $db->prepare('DELETE FROM likes WHERE post_id = ? AND member_id = ?');
     $dislike->execute(array($_REQUEST['post'], $_SESSION['id']));
+} else{
+    header('Location: index.php');
+    exit();
 }
 
 if (empty($_REQUEST['back'])){

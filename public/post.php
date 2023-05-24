@@ -1,17 +1,12 @@
 <?php
 session_start();
 require('dbconnection.php');
+require('./functions/likes.php');
+require('./functions/posts.php');
 //SESSIONにidを保持していないゲストはログイン画面へ移動させる
 if (empty($_SESSION['id'])){
     header('Location: login.php');
     exit();
-}
-
-function url_check($value){
-    return preg_replace('/((http|https):\/\/[-_.!~*\'()a-zA-Z0-9;\/?:@&=+$,%#]+)/','<a href="$1" target="_blank">$1</a>',$value);
-}
-function h($value){
-    return htmlspecialchars($value, ENT_QUOTES);
 }
 
 if (!empty($_REQUEST['id'])){
@@ -48,30 +43,6 @@ if (!empty($_REQUEST['id'])){
 } else{
     header('Location: index.php');
     exit();
-}
-
-//ある投稿に何個のいいねが押されているかカウントする関数
-//引数
-//$db : PDOインスタンス
-//$post : 投稿のレコード
-//出力
-//likesテーブルにpost_idが$post['id']であるレコードがいくつあるか
-function likeNum($db, $post){
-    $likes = $db->prepare('SELECT * FROM likes WHERE post_id = ?');
-    $likes->execute(array($post['id']));
-    return $likes->rowCount();
-}
-
-//ある投稿にユーザがいいねを押しているか判定する関数
-//引数
-//$db : PDOインスタンス
-//$post : 投稿のレコード
-//出力
-//likesテーブルにpost_idが$post['id']で、liker_idが$_SESSION['id']であるあるレコードがいくつあるか
-function likerFlag($db, $post){
-    $liker = $db->prepare('SELECT * FROM likes WHERE post_id=? AND liker_id=?');
-    $liker->execute(array($post['id'], $_SESSION['id']));
-    return $liker->rowCount();
 }
 
 ?>
@@ -143,9 +114,9 @@ function likerFlag($db, $post){
                         <div class='flex'>
                             <div>
                                 <?php if(empty(likerFlag($db, $topPost))):?>
-                                    <a href="likes.php?post=<?php echo $topPost['id'];?>">&#9825;</a>
+                                    <a href="likes.php?post=<?php echo $topPost['id'];?>&back=post">&#9825;</a>
                                 <?php else: ?>
-                                    <a href="dislikes.php?post=<?php echo $topPost['id'];?>">&#9829;</a>
+                                    <a href="dislikes.php?post=<?php echo $topPost['id'];?>&back=post">&#9829;</a>
                                 <?php endif; ;?>
                             </div>
                             <div>
