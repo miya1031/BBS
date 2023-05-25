@@ -79,7 +79,6 @@ function h($value){
                                             <span>メールアドレスを入力してください</span>
                                         <?php elseif($error['email'] == 'unregistered'): ?>
                                             <span>正しいメールアドレスを入力してください</span>
-                                            <p><?php echo $_POST['email'] . '/' . $_POST['password'];?></p>
                                         <?php endif; ?>
                                     </div>
                                 </div>   

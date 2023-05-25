@@ -20,6 +20,7 @@ services:
     environment:
       MYSQL_DATABASE: board
       MYSQL_ROOT_PASSWORD: example
+      TZ: Asia/Tokyo
       # MYSQL_USER: admin
       # MYSQL_PASSWORD: example
 

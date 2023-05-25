@@ -7,11 +7,14 @@
 - 投稿/編集/削除
 - 返信
 - 退会
+- いいね機能
 
-## プロジェクトの作成方法
+## 環境構築手順
 1. Docker composeによるプロジェクトの起動  
     ```docker compose up -d```
-
+2. nodebrewを使用したnode.js(npm)のインストール  
+    ```nodebrew install v20.1.0```  
+    ```nodebrew use v20.1.0```
 ## ファイル構造
 <pre>
 .

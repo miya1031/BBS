@@ -1,15 +1,13 @@
 <?php
 session_start();
 require('dbconnection.php');
+require('./functions/likes.php');
+require('./functions/posts.php');
 
 //SESSIONにidを保持していないゲストはログイン画面へ移動させる
 if (empty($_SESSION['id'])){
     header('Location: login.php');
     exit();
-}
-
-function url_check($value){
-    return preg_replace('/((http|https):\/\/[-_.!~*\'()a-zA-Z0-9;\/?:@&=+$,%#]+)/','<a href="$1" target="_blank">$1</a>',$value);
 }
 
 if (!empty($_REQUEST['re'])){//$_REQUEST['re']に格納されている値が本当に存在するか
@@ -84,9 +82,6 @@ $statement = $db->prepare('SELECT m.name, m.icon, p.* FROM members m INNER JOIN 
 $statement->bindParam(1,$start_num,PDO::PARAM_INT);
 $statement->execute();
 
-function h($value){
-    return htmlspecialchars($value, ENT_QUOTES);
-}
 ?>
 <!DOCTYPE html>
 <html lang="ja" data-theme="lemonade">
@@ -178,6 +173,20 @@ function h($value){
                                     <a class='text-left' href='post.php?id=<?php echo h($post['id'])?>'>
                                         <p class='text-xl px-4 text-left'><?php if (mb_strlen(h($post['message']))<40): echo url_check(h($post['message'])); else: echo url_check(mb_substr(h($post['message']),0,40)) . '&nbsp;...'; endif;?></p>
                                     </a>
+                                    <div class='pt-2'>
+                                        <div class='flex'>
+                                            <div>
+                                                <?php if(empty(likerFlag($db, $post))):?>
+                                                    <a href="likes.php?post=<?php echo $post['id'];?>">&#9825;</a>
+                                                <?php else: ?>
+                                                    <a href="dislikes.php?post=<?php echo $post['id'];?>">&#9829;</a>
+                                                <?php endif; ;?>
+                                            </div>
+                                            <div>
+                                                <?php if(!empty(likeNum($db, $post))): echo(likeNum($db, $post)); endif; ;?>
+                                            </div>
+                                        </div>
+                                    </div>
                             </div>
                             <div class='flex flex-col w-1/5 h-32'>
                                     <div class='h-1/3'>

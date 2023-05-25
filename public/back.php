@@ -3,10 +3,10 @@ session_start();
 require('dbconnection.php');
 
 if (!empty($_REQUEST['id'])){
-    $statement = $db->prepare('SELECT * FROM posts WHERE id = ?');
+    $statement = $db->prepare('SELECT COUNT(*) AS cnt FROM posts WHERE id = ?');
     $statement->execute(array($_REQUEST['id']));
-    $count = $statement->rowCount();
-    if ($count==1){
+    $count = $statement->fetch();
+    if ($count['cnt']==1){
         $num = $db->prepare('SELECT COUNT(*) AS cnt FROM posts WHERE id >= ?');//idは作成順に並んでいる。指定したidより大きいidの個数を調べる
         $num->execute(array($_REQUEST['id']));
         $postNum = $num->fetch();
