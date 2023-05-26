@@ -18,7 +18,7 @@ function likeNum($db, $post){
  * @param $db PDOインスタンス
  * @param $post 投稿のレコード
  * 
- * @return likesテーブルにpost_idが$post['id']で、liker_idが$_SESSION['id']であるあるレコードがいくつあるか
+ * @return likesテーブルにpost_idが$post['id']で、member_idが$_SESSION['id']であるあるレコードがいくつあるか
  */
 function likerFlag($db, $post){
     $liker = $db->prepare('SELECT COUNT(*) as cnt FROM likes WHERE post_id=? AND member_id=?');

@@ -2,6 +2,7 @@
 session_start();
 require('dbconnection.php');
 require('./functions/likes.php');
+require('./functions/retweets.php');
 require('./functions/posts.php');
 //SESSIONにidを保持していないゲストはログイン画面へ移動させる
 if (empty($_SESSION['id'])){
@@ -110,17 +111,31 @@ if (!empty($_REQUEST['id'])){
                     <div class='text-left pt-2 md:pt-0'>
                         <p class='text-xl px-4 text-left'><?php echo url_check(h($topPost['message']));?></p>
                     </div>
-                    <div class='pt-2'>
-                        <div class='flex'>
-                            <div>
-                                <?php if(empty(likerFlag($db, $topPost))):?>
-                                    <a href="likes.php?post=<?php echo $topPost['id'];?>&back=post">&#9825;</a>
-                                <?php else: ?>
-                                    <a href="dislikes.php?post=<?php echo $topPost['id'];?>&back=post">&#9829;</a>
-                                <?php endif; ;?>
+                    <div class='pt-4 w-full'>
+                        <div class='flex justify-between justify-items-center w-full'>
+                            <div class='flex w-1/2'>
+                                <div>
+                                    <?php if(empty(likerFlag($db, $topPost))):?>
+                                        <a href="likes.php?post=<?php echo $topPost['id'];?>&back=post">&#9825;</a>
+                                    <?php else: ?>
+                                        <a href="dislikes.php?post=<?php echo $topPost['id'];?>&back=post">&#9829;</a>
+                                    <?php endif; ;?>
+                                </div>
+                                <div class='pl-2'>
+                                    <?php if(!empty(likeNum($db, $topPost))): echo(likeNum($db, $topPost)); endif; ;?>
+                                </div>
                             </div>
-                            <div>
-                                <?php if(!empty(likeNum($db, $topPost))): echo(likeNum($db, $topPost)); endif; ;?>
+                            <div class='flex w-1/2'>
+                                <div>
+                                    <?php if(empty(retweetFlag($db, $topPost))):?>
+                                        <a href="retweets.php?post=<?php echo $topPost['id'];?>&back=post">&#8625;&#8626;</a>
+                                    <?php else: ?>
+                                        <a href="retweetCancels.php?post=<?php echo $topPost['id'];?>&back=post" class='text-primary'>&#8625;&#8626;</a>
+                                    <?php endif; ;?>
+                                </div>
+                                <div class='pl-2'>
+                                    <?php if(!empty(retweetNum($db, $topPost))): echo(retweetNum($db, $topPost)); endif; ;?>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -166,17 +181,31 @@ if (!empty($_REQUEST['id'])){
                         <div class='text-left pt-0 md:pt-2'>
                             <p class='text-xl px-4 text-left'><?php echo url_check(h($replyPost['message']));?></p>
                         </div>
-                        <div class='pt-2'>
-                            <div class='flex'>
-                                <div>
-                                    <?php if(empty(likerFlag($db, $replyPost))):?>
-                                        <a href="likes.php?post=<?php echo $replyPost['id'];?>&back=post">&#9825;</a>
-                                    <?php else: ?>
-                                        <a href="dislikes.php?post=<?php echo $replyPost['id'];?>&back=post">&#9829;</a>
-                                    <?php endif; ;?>
+                        <div class='pt-4 w-full'>
+                            <div class='flex justify-between justify-items-center w-full'>
+                                <div class='flex w-1/2'>
+                                    <div>
+                                        <?php if(empty(likerFlag($db, $replyPost))):?>
+                                            <a href="likes.php?post=<?php echo $replyPost['id'];?>&back=post">&#9825;</a>
+                                        <?php else: ?>
+                                            <a href="dislikes.php?post=<?php echo $replyPost['id'];?>&back=post">&#9829;</a>
+                                        <?php endif; ;?>
+                                    </div>
+                                    <div>
+                                        <?php if(!empty(likeNum($db, $replyPost))): echo(likeNum($db, $replyPost)); endif; ;?>
+                                    </div>
                                 </div>
-                                <div>
-                                    <?php if(!empty(likeNum($db, $replyPost))): echo(likeNum($db, $replyPost)); endif; ;?>
+                                <div class='flex w-1/2'>
+                                    <div>
+                                        <?php if(empty(retweetFlag($db, $replyPost))):?>
+                                            <a href="retweets.php?post=<?php echo $replyPost['id'];?>&back=post">&#8625;&#8626;</a>
+                                        <?php else: ?>
+                                            <a href="retweetCancels.php?post=<?php echo $replyPost['id'];?>&back=post" class='text-primary'>&#8625;&#8626;</a>
+                                        <?php endif; ;?>
+                                    </div>
+                                    <div class='pl-2'>
+                                        <?php if(!empty(retweetNum($db, $replyPost))): echo(retweetNum($db, $replyPost)); endif; ;?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
