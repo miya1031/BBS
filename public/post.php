@@ -54,6 +54,7 @@ if (!empty($_REQUEST['id'])){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BBS</title>
     <link href="output.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/de14c321d7.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <header class='navbar bg-primary'>
@@ -116,9 +117,9 @@ if (!empty($_REQUEST['id'])){
                             <div class='flex w-1/2'>
                                 <div>
                                     <?php if(empty(likerFlag($db, $topPost))):?>
-                                        <a href="likes.php?post=<?php echo $topPost['id'];?>&back=post">&#9825;</a>
+                                        <a href="likes.php?post=<?php echo $topPost['id'];?>&back=post"><i class="fa-regular fa-heart" style="color: #515251;"></i></a>
                                     <?php else: ?>
-                                        <a href="dislikes.php?post=<?php echo $topPost['id'];?>&back=post">&#9829;</a>
+                                        <a href="dislikes.php?post=<?php echo $topPost['id'];?>&back=post"><i class="fa-solid fa-heart" style="color: #31c21e;"></i></a>
                                     <?php endif; ;?>
                                 </div>
                                 <div class='pl-2'>
@@ -128,9 +129,9 @@ if (!empty($_REQUEST['id'])){
                             <div class='flex w-1/2'>
                                 <div>
                                     <?php if(empty(retweetFlag($db, $topPost))):?>
-                                        <a href="retweets.php?post=<?php echo $topPost['id'];?>&back=post">&#8625;&#8626;</a>
+                                        <a href="retweets.php?post=<?php echo $topPost['id'];?>&back=post"><i class="fa-solid fa-retweet" style="color: #515251;"></i></a>
                                     <?php else: ?>
-                                        <a href="retweetCancels.php?post=<?php echo $topPost['id'];?>&back=post" class='text-primary'>&#8625;&#8626;</a>
+                                        <a href="retweetCancels.php?post=<?php echo $topPost['id'];?>&back=post" class='text-primary'><i class="fa-solid fa-retweet" style="color: #31c21e;"></i></a>
                                     <?php endif; ;?>
                                 </div>
                                 <div class='pl-2'>
@@ -186,21 +187,21 @@ if (!empty($_REQUEST['id'])){
                                 <div class='flex w-1/2'>
                                     <div>
                                         <?php if(empty(likerFlag($db, $replyPost))):?>
-                                            <a href="likes.php?post=<?php echo $replyPost['id'];?>&back=post">&#9825;</a>
+                                            <a href="likes.php?post=<?php echo $replyPost['id'];?>&back=post"><i class="fa-regular fa-heart" style="color: #515251;"></i></a>
                                         <?php else: ?>
-                                            <a href="dislikes.php?post=<?php echo $replyPost['id'];?>&back=post">&#9829;</a>
+                                            <a href="dislikes.php?post=<?php echo $replyPost['id'];?>&back=post"><i class="fa-solid fa-heart" style="color: #31c21e;"></i></a>
                                         <?php endif; ;?>
                                     </div>
-                                    <div>
+                                    <div class='pl-2'>
                                         <?php if(!empty(likeNum($db, $replyPost))): echo(likeNum($db, $replyPost)); endif; ;?>
                                     </div>
                                 </div>
                                 <div class='flex w-1/2'>
                                     <div>
                                         <?php if(empty(retweetFlag($db, $replyPost))):?>
-                                            <a href="retweets.php?post=<?php echo $replyPost['id'];?>&back=post">&#8625;&#8626;</a>
+                                            <a href="retweets.php?post=<?php echo $replyPost['id'];?>&back=post"><i class="fa-solid fa-retweet" style="color: #515251;"></i></a>
                                         <?php else: ?>
-                                            <a href="retweetCancels.php?post=<?php echo $replyPost['id'];?>&back=post" class='text-primary'>&#8625;&#8626;</a>
+                                            <a href="retweetCancels.php?post=<?php echo $replyPost['id'];?>&back=post" class='text-primary'><i class="fa-solid fa-retweet" style="color: #31c21e;"></i></a>
                                         <?php endif; ;?>
                                     </div>
                                     <div class='pl-2'>

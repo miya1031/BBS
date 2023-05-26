@@ -97,6 +97,7 @@ $statement->execute();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BBS</title>
     <link href="output.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/de14c321d7.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <header class='navbar bg-primary'>
@@ -159,7 +160,7 @@ $statement->execute();
                         <div class='flex flex-col p-1 hover:bg-primary-content h-auto border-b border-gray-200'>
                             <div>
                                 <p class='text-primary p-2'>
-                                    <?php if(!empty($post['rtw_name'])):;?>&#8625;&#8626;&nbsp;<?php echo h($post['rtw_name']) . 'さんがリツイートしました'; endif; ;?>
+                                    <?php if(!empty($post['rtw_name'])):;?><i class="fa-solid fa-retweet" style="color: #31c21e;"></i>&nbsp;<?php echo h($post['rtw_name']) . 'さんがリツイートしました'; endif; ;?>
                                 </p>
                             </div>
                             <div class='flex'>
@@ -191,9 +192,9 @@ $statement->execute();
                                                 <div class='flex w-1/2'>
                                                     <div>
                                                         <?php if(empty(likerFlag($db, $post))):?>
-                                                            <a href="likes.php?post=<?php echo $post['id'];?>">&#9825;</a>
+                                                            <a href="likes.php?post=<?php echo $post['id'];?>"><i class="fa-regular fa-heart" style="color: #515251;"></i></a>
                                                         <?php else: ?>
-                                                            <a href="dislikes.php?post=<?php echo $post['id'];?>" class='text-primary'>&#9829;</a>
+                                                            <a href="dislikes.php?post=<?php echo $post['id'];?>" class='text-primary'><i class="fa-solid fa-heart" style="color: #31c21e;"></i></a>
                                                         <?php endif; ;?>
                                                     </div>
                                                     <div class='pl-2'>
@@ -203,9 +204,9 @@ $statement->execute();
                                                 <div class='flex w-1/2'>
                                                     <div>
                                                         <?php if(empty(retweetFlag($db, $post))):?>
-                                                            <a href="retweets.php?post=<?php echo $post['id'];?>">&#8625;&#8626;</a>
+                                                            <a href="retweets.php?post=<?php echo $post['id'];?>"><i class="fa-solid fa-retweet" style="color: #515251;"></i></a>
                                                         <?php else: ?>
-                                                            <a href="retweetCancels.php?post=<?php echo $post['id'];?>" class='text-primary'>&#8625;&#8626;</a>
+                                                            <a href="retweetCancels.php?post=<?php echo $post['id'];?>"><i class="fa-solid fa-retweet" style="color: #31c21e;"></i></a>
                                                         <?php endif; ;?>
                                                     </div>
                                                     <div class='pl-2'>
