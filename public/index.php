@@ -2,6 +2,7 @@
 session_start();
 require('dbconnection.php');
 require('./functions/likes.php');
+require('./functions/retweets.php');
 require('./functions/posts.php');
 
 //SESSIONにidを保持していないゲストはログイン画面へ移動させる
@@ -70,7 +71,9 @@ $page = max($page,1);//ページ番号がマイナスだった場合
 
 $statement = $db->query('SELECT COUNT(*) AS cnt FROM posts');
 $count = $statement->fetch();
-$max_page = ceil($count['cnt']/5);
+$statement = $db->query('SELECT COUNT(*) AS rtw_cnt FROM retweets');//リツイートの数も投稿数に加算する
+$rtw_count = $statement->fetch();
+$max_page = ceil(($count['cnt']+$rtw_count['rtw_cnt'])/5);
 if ($max_page==0){//投稿がひとつもない場合はmax_page=0になってしまい、エラーが出るので1を代入する。
     $max_page = 1;
 }
@@ -78,9 +81,27 @@ $page = min($page, $max_page);//ページ番号が最大ページ数より大き
 
 $start_num = ($page-1)*5;
 
-$statement = $db->prepare('SELECT m.name, m.icon, p.* FROM members m INNER JOIN posts p ON m.id=p.member_id ORDER BY p.created DESC LIMIT ?, 5');
+$statement = $db->prepare('SELECT m.name, m.icon, p.* , p.created AS rtw_created, NULL AS rtw_name FROM members m INNER JOIN posts p ON m.id=p.member_id 
+                        UNION ALL
+                        SELECT m_.name, m_.icon, p_.* , r.created AS rtw_created, e.name AS rtw_name FROM members m_ INNER JOIN posts p_ ON m_.id=p_.member_id INNER JOIN retweets r ON p_.id=r.post_id INNER JOIN members e ON r.member_id = e.id
+                        ORDER BY rtw_created DESC LIMIT ?, 5
+                        ');
 $statement->bindParam(1,$start_num,PDO::PARAM_INT);
 $statement->execute();
+$table = $statement->fetchAll(PDO::FETCH_ASSOC);
+$postList = array();
+foreach ($table as $record){
+    $postList[] = $record['id'];
+}
+
+
+
+//いいね情報が格納された連想配列
+$likeList = likeNum($db, $postList);
+$likeFlagList = likerFlag($db, $postList);
+//リツイート情報が格納された連想配列
+$retweetList = retweetNum($db, $postList);
+$retweetFlagList = retweetFlag($db, $postList);
 
 ?>
 <!DOCTYPE html>
@@ -90,6 +111,7 @@ $statement->execute();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BBS</title>
     <link href="output.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/de14c321d7.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <header class='navbar bg-primary'>
@@ -148,60 +170,81 @@ $statement->execute();
                     <p class='text-2xl p-4 font-bold'>投稿一覧</p>
                 </div>
                 <div class='p-2'>
-                    <?php while($post = $statement->fetch()){ ?>
-                        <div class='flex p-1 hover:bg-primary-content h-auto border-b border-gray-200 xl:border-b-0'>
-                            <div class='w-1/5'>
-                                <?php if (!empty($post['icon'])):?>
-                                <div class="avatar m-2 md:m-0">
-                                    <div class="w-16 md:w-24 rounded">
-                                        <img src="./member_image/<?php echo h($post['icon']);?>" alt="アイコン画像">
+                    <?php foreach($table as $post){ ?>
+                        <div class='flex flex-col p-1 hover:bg-primary-content h-auto border-b border-gray-200'>
+                            <div>
+                                <p class='text-primary p-2'>
+                                    <?php if(!empty($post['rtw_name'])):;?><i class="fa-solid fa-retweet" style="color: #31c21e;"></i>&nbsp;<?php echo h($post['rtw_name']) . 'さんがリツイートしました'; endif; ;?>
+                                </p>
+                            </div>
+                            <div class='flex'>
+                                <div class='w-1/5'>
+                                    <?php if (!empty($post['icon'])):?>
+                                    <div class="avatar m-2 md:m-0">
+                                        <div class="w-16 md:w-24 rounded">
+                                            <img src="./member_image/<?php echo h($post['icon']);?>" alt="アイコン画像">
+                                        </div>
                                     </div>
+                                    <?php else: ?>
+                                    <div class="avatar placeholder m-2 md:m-0">
+                                        <div class="bg-primary text-primary-content w-16 md:w-24 rounded">
+                                            <span class="text-3xl">no<br>image</span>
+                                        </div>
+                                    </div> 
+                                    <?php endif; ;?>
                                 </div>
-                                <?php else: ?>
-                                <div class="avatar placeholder m-2 md:m-0">
-                                    <div class="bg-primary text-primary-content w-16 md:w-24 rounded">
-                                        <span class="text-3xl">no<br>image</span>
-                                    </div>
-                                </div> 
-                                <?php endif; ;?>
-                            </div>
-                            <div class='flex flex-col items-start w-3/5'>
-                                    <div class='flex flex-col md:flex-row'>
-                                        <span class='text-xl md:text-3xl py-2 px-4 font-bold'><?php echo h($post['name']);?></span>
-                                        <span class='pl-2 text-base-300 pt-0 md:pt-2'><?php echo h($post['created']);?></span>
-                                    </div>
-                                    <a class='text-left' href='post.php?id=<?php echo h($post['id'])?>'>
-                                        <p class='text-xl px-4 text-left'><?php if (mb_strlen(h($post['message']))<40): echo url_check(h($post['message'])); else: echo url_check(mb_substr(h($post['message']),0,40)) . '&nbsp;...'; endif;?></p>
-                                    </a>
-                                    <div class='pt-2'>
-                                        <div class='flex'>
-                                            <div>
-                                                <?php if(empty(likerFlag($db, $post))):?>
-                                                    <a href="likes.php?post=<?php echo $post['id'];?>">&#9825;</a>
-                                                <?php else: ?>
-                                                    <a href="dislikes.php?post=<?php echo $post['id'];?>">&#9829;</a>
-                                                <?php endif; ;?>
+                                <div class='flex flex-col items-start w-3/5'>
+                                        <div class='flex flex-col md:flex-row'>
+                                            <span class='text-xl md:text-3xl py-2 px-4 font-bold'><?php echo h($post['name']);?></span>
+                                            <span class='pl-2 text-base-300 pt-0 md:pt-2'><?php echo h($post['created']);?></span>
+                                        </div>
+                                        <a class='text-left' href='post.php?id=<?php echo h($post['id'])?>'>
+                                            <p class='text-xl px-4 text-left'><?php if (mb_strlen(h($post['message']))<40): echo url_check(h($post['message'])); else: echo url_check(mb_substr(h($post['message']),0,40)) . '&nbsp;...'; endif;?></p>
+                                        </a>
+                                        <div class='pt-4 w-full'>
+                                            <div class='flex justify-between justify-items-center w-full'>
+                                                <div class='flex w-1/2'>
+                                                    <div>
+                                                        <?php if(empty($likeFlagList[$post['id']])):?>
+                                                            <a href="likes.php?post=<?php echo $post['id'];?>"><i class="fa-regular fa-heart" style="color: #515251;"></i></a>
+                                                        <?php else: ?>
+                                                            <a href="dislikes.php?post=<?php echo $post['id'];?>" class='text-primary'><i class="fa-solid fa-heart" style="color: #31c21e;"></i></a>
+                                                        <?php endif; ;?>
+                                                    </div>
+                                                    <div class='pl-2'>
+                                                        <?php if(!empty($likeList[$post['id']])): echo($likeList[$post['id']]); endif; ;?>
+                                                    </div>
+                                                </div>
+                                                <div class='flex w-1/2'>
+                                                    <div>
+                                                        <?php if(empty($retweetFlagList[$post['id']])):?>
+                                                            <a href="retweets.php?post=<?php echo $post['id'];?>"><i class="fa-solid fa-retweet" style="color: #515251;"></i></a>
+                                                        <?php else: ?>
+                                                            <a href="retweetCancels.php?post=<?php echo $post['id'];?>"><i class="fa-solid fa-retweet" style="color: #31c21e;"></i></a>
+                                                        <?php endif; ;?>
+                                                    </div>
+                                                    <div class='pl-2'>
+                                                        <?php if(!empty($retweetList[$post['id']])): echo($retweetList[$post['id']]); endif; ;?>
+                                                    </div>
+                                                </div>   
                                             </div>
-                                            <div>
-                                                <?php if(!empty(likeNum($db, $post))): echo(likeNum($db, $post)); endif; ;?>
+                                        </div>
+                                </div>
+                                <div class='flex flex-col w-1/5 h-32'>
+                                        <div class='h-1/3'>
+                                            <a href="index.php?page=<?php echo h($page)?>&re=<?php echo h($post['id'])?>" class='badge badge-primary'>返信</a>
+                                        </div>
+                                        <?php if ($_SESSION['id'] == $post['member_id']):?>
+                                            <div class='h-1/3'>
+                                                <a href="index.php?page=<?php echo h($page)?>&ed=<?php echo h($post['id'])?>" class='badge badge-primary'>編集</a>
                                             </div>
-                                        </div>
-                                    </div>
-                            </div>
-                            <div class='flex flex-col w-1/5 h-32'>
-                                    <div class='h-1/3'>
-                                        <a href="index.php?page=<?php echo h($page)?>&re=<?php echo h($post['id'])?>" class='badge badge-primary'>返信</a>
-                                    </div>
-                                    <?php if ($_SESSION['id'] == $post['member_id']):?>
-                                        <div class='h-1/3'>
-                                            <a href="index.php?page=<?php echo h($page)?>&ed=<?php echo h($post['id'])?>" class='badge badge-primary'>編集</a>
-                                        </div>
-                                    <?php endif;?>
-                                    <?php if ($_SESSION['id'] == $post['member_id']):?>
-                                        <div class='h-1/3'>
-                                            <a href="delete.php?id=<?php echo h($post['id'])?>" class='badge badge-primary'>削除</a>
-                                        </div>
-                                    <?php endif;?>
+                                        <?php endif;?>
+                                        <?php if ($_SESSION['id'] == $post['member_id']):?>
+                                            <div class='h-1/3'>
+                                                <a href="delete.php?id=<?php echo h($post['id'])?>" class='badge badge-primary'>削除</a>
+                                            </div>
+                                        <?php endif;?>
+                                </div>
                             </div>
                         </div>
                     <?php } ?>
@@ -224,7 +267,6 @@ $statement->execute();
                 <?php endif; ;?>
             </div>
         </div>
-        
     </main>
     <footer class='footer footer-center p-4 bg-primary-content text-base-content'>
         <div>
