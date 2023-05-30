@@ -1,29 +1,41 @@
 <?php
 /**
- * ある投稿が何回リツイートされているかカウントする関数
+ * $listに格納された投稿idに対応する投稿にそれぞれ何個リツイートされているかカウントする関数
  * @param $db PDOインスタンス
- * @param $post 投稿のレコード
+ * @param $list array
  * 
- * @return retweetsテーブルにpost_idが$post['id']であるレコードがいくつあるか
+ * @return array<int, int>
+ * 戻り値の連想配列はキーが投稿id、値がいいねの数
+ * いいねがゼロの投稿の情報は格納されていません。
  */
-function retweetNum($db, $post){
-    $retweets = $db->prepare('SELECT COUNT(*) AS cnt FROM retweets WHERE post_id = ?');
-    $retweets->execute(array($post['id']));
-    $count = $retweets->fetch();
-    return $count['cnt'];
+function retweetNum($db, $list){
+    $result = array();
+    $PDOList = substr(str_repeat(',?', count($list)), 1);
+    $statement = $db->prepare(sprintf('SELECT COUNT(p.id) AS cnt, p.id AS id FROM posts p JOIN retweets r ON p.id = r.post_id WHERE p.id IN (%s) GROUP BY p.id', $PDOList));
+    $statement->execute($list);
+    while($value = $statement->fetch()){
+        $result[$value['id']] = $value['cnt'];
+    }
+    return $result;
 }
 
 /**
- * ある投稿をユーザがリツイートしているか判定する関数
+ * $listに格納された投稿idに対応する投稿をユーザがリツイートしているか判定する関数
  * @param $db PDOインスタンス
- * @param $post 投稿のレコード
+ * @param $list array
  * 
- * @return retweetsテーブルにpost_idが$post['id']で、member_idが$_SESSION['id']であるあるレコードがいくつあるか
+ * @return array<int, int>
+ * 戻り値の連想配列はキーが投稿id、ユーザがいいねを押していたら値が1
+ * いいねを押していない場合、empty
  */
-function retweetFlag($db, $post){
-    $retweet = $db->prepare('SELECT COUNT(*) as cnt FROM retweets WHERE post_id=? AND member_id=?');
-    $retweet->execute(array($post['id'], $_SESSION['id']));
-    $count = $retweet->fetch();
-    return $count['cnt'];
+function retweetFlag($db, $list){
+    $result = array();
+    $PDOList = substr(str_repeat(',?', count($list)), 1);
+    $statement = $db->prepare(sprintf('SELECT COUNT(p.id) AS cnt, p.id AS id FROM posts p JOIN retweets r ON p.id = r.post_id WHERE r.member_id = ? AND p.id IN (%s) GROUP BY p.id', $PDOList));
+    $statement->execute(array_merge(array($_SESSION['id']), $list));
+    while($value = $statement->fetch()){
+        $result[$value['id']] = $value['cnt'];
+    }
+    return $result;
 }
 ?>

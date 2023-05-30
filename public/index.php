@@ -87,7 +87,21 @@ $statement = $db->prepare('SELECT m.name, m.icon, p.* , p.created AS rtw_created
                         ORDER BY rtw_created DESC LIMIT ?, 5
                         ');
 $statement->bindParam(1,$start_num,PDO::PARAM_INT);
-$statement->execute();  
+$statement->execute();
+$table = $statement->fetchAll(PDO::FETCH_ASSOC);
+$postList = array();
+foreach ($table as $record){
+    $postList[] = $record['id'];
+}
+
+
+
+//いいね情報が格納された連想配列
+$likeList = likeNum($db, $postList);
+$likeFlagList = likerFlag($db, $postList);
+//リツイート情報が格納された連想配列
+$retweetList = retweetNum($db, $postList);
+$retweetFlagList = retweetFlag($db, $postList);
 
 ?>
 <!DOCTYPE html>
@@ -156,7 +170,7 @@ $statement->execute();
                     <p class='text-2xl p-4 font-bold'>投稿一覧</p>
                 </div>
                 <div class='p-2'>
-                    <?php while($post = $statement->fetch()){ ?>
+                    <?php foreach($table as $post){ ?>
                         <div class='flex flex-col p-1 hover:bg-primary-content h-auto border-b border-gray-200'>
                             <div>
                                 <p class='text-primary p-2'>
@@ -191,26 +205,26 @@ $statement->execute();
                                             <div class='flex justify-between justify-items-center w-full'>
                                                 <div class='flex w-1/2'>
                                                     <div>
-                                                        <?php if(empty(likerFlag($db, $post))):?>
+                                                        <?php if(empty($likeFlagList[$post['id']])):?>
                                                             <a href="likes.php?post=<?php echo $post['id'];?>"><i class="fa-regular fa-heart" style="color: #515251;"></i></a>
                                                         <?php else: ?>
                                                             <a href="dislikes.php?post=<?php echo $post['id'];?>" class='text-primary'><i class="fa-solid fa-heart" style="color: #31c21e;"></i></a>
                                                         <?php endif; ;?>
                                                     </div>
                                                     <div class='pl-2'>
-                                                        <?php if(!empty(likeNum($db, $post))): echo(likeNum($db, $post)); endif; ;?>
+                                                        <?php if(!empty($likeList[$post['id']])): echo($likeList[$post['id']]); endif; ;?>
                                                     </div>
                                                 </div>
                                                 <div class='flex w-1/2'>
                                                     <div>
-                                                        <?php if(empty(retweetFlag($db, $post))):?>
+                                                        <?php if(empty($retweetFlagList[$post['id']])):?>
                                                             <a href="retweets.php?post=<?php echo $post['id'];?>"><i class="fa-solid fa-retweet" style="color: #515251;"></i></a>
                                                         <?php else: ?>
                                                             <a href="retweetCancels.php?post=<?php echo $post['id'];?>"><i class="fa-solid fa-retweet" style="color: #31c21e;"></i></a>
                                                         <?php endif; ;?>
                                                     </div>
                                                     <div class='pl-2'>
-                                                        <?php if(!empty(retweetNum($db, $post))): echo(retweetNum($db, $post)); endif; ;?>
+                                                        <?php if(!empty($retweetList[$post['id']])): echo($retweetList[$post['id']]); endif; ;?>
                                                     </div>
                                                 </div>   
                                             </div>
