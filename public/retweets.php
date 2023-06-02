@@ -19,10 +19,27 @@ if ($count['cnt']==1){
 }
 
 if (empty($_REQUEST['back'])){
-    header('Location: back.php?id=' . $_REQUEST['post']);
-    exit();
+    if (empty($_GET['dp'])){
+        header('Location: back.php?created=' . $_GET['created']);
+        exit();
+    } else{
+        header('Location: back.php?created=' . $_GET['created'] . '&dp=' . $_GET['dp'] . '&mId=' . $_GET['mId']);
+        exit();
+    }
 } else{
-    header('Location: post.php?id=' . $_REQUEST['post']);
-    exit();
+    if (empty($_GET['dp'])){
+        ?>
+        <script type='text/javascript'>
+            location.href = 'post.php?id=<?php echo $_REQUEST['post']; ?>&created=<?php echo $_GET['created'];?>';
+        </script>
+        <?php
+    } else{
+        ?>
+        <script type='text/javascript'>
+            location.href = 'post.php?id=<?php echo $_REQUEST['post']; ?>&created=<?php echo $_GET['created'];?>&dp=<?php echo $_GET['dp']; ?>&mId=<?php echo $_GET['mId'] ?>';
+        </script>
+        <?php
+        exit();
+    }
 }
 ?>
